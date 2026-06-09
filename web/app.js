@@ -1,9 +1,15 @@
 const state = {
   lines: [],
   interpretation: null,
+  mode: "direct",
+  coinDraft: [],
+  manualValues: [7, 7, 7, 7, 7, 7],
 };
 
 const castButton = document.getElementById("castButton");
+const coinCastButton = document.getElementById("coinCastButton");
+const coinResetButton = document.getElementById("coinResetButton");
+const manualAnalyzeButton = document.getElementById("manualAnalyzeButton");
 const resetButton = document.getElementById("resetButton");
 const aiButton = document.getElementById("aiButton");
 const questionInput = document.getElementById("questionInput");
@@ -11,6 +17,26 @@ const linesContainer = document.getElementById("linesContainer");
 const readingContainer = document.getElementById("readingContainer");
 const aiContainer = document.getElementById("aiContainer");
 const statusBadge = document.getElementById("statusBadge");
+const modeBadge = document.getElementById("modeBadge");
+const coinProgressText = document.getElementById("coinProgressText");
+const coinPreview = document.getElementById("coinPreview");
+const modeButtons = {
+  direct: document.getElementById("modeDirect"),
+  coins: document.getElementById("modeCoins"),
+  manual: document.getElementById("modeManual"),
+};
+const modePanels = {
+  direct: document.getElementById("directPanel"),
+  coins: document.getElementById("coinsPanel"),
+  manual: document.getElementById("manualPanel"),
+};
+const manualSelects = Array.from(document.querySelectorAll(".manual-select"));
+
+const modeLabels = {
+  direct: "直接起卦",
+  coins: "铜钱起卦",
+  manual: "手动输入",
+};
 
 function setStatus(text) {
   statusBadge.textContent = text;
@@ -34,6 +60,93 @@ function escapeHtml(text) {
     };
     return entities[char];
   });
+}
+
+function valueToLineMeta(value) {
+  const lineValue = Number(value);
+  const isYang = lineValue === 7 || lineValue === 9;
+  const isMoving = lineValue === 6 || lineValue === 9;
+  return {
+    value: lineValue,
+    display_symbol: isYang ? "———" : "— —",
+    yin_yang_label:
+      lineValue === 6
+        ? "老阴（动爻）"
+        : lineValue === 7
+          ? "少阳（静爻）"
+          : lineValue === 8
+            ? "少阴（静爻）"
+            : "老阳（动爻）",
+    is_moving: isMoving,
+  };
+}
+
+function renderCoinDraft() {
+  if (!state.coinDraft.length) {
+    coinPreview.className = "draft-lines empty-draft";
+    coinPreview.textContent = "铜钱起卦的六爻进度会显示在这里。";
+    coinProgressText.textContent = "当前还未开始，请点击起第一爻。";
+    return;
+  }
+
+  const reversed = [...state.coinDraft]
+    .map((value, index) => ({ ...valueToLineMeta(value), position: index + 1 }))
+    .reverse();
+
+  coinPreview.className = "draft-lines";
+  coinPreview.innerHTML = reversed
+    .map(
+      (line) => `
+        <div class="draft-line-card">
+          <span class="draft-line-position">第 ${line.position} 爻</span>
+          <span class="draft-line-symbol">${line.display_symbol}</span>
+          <span class="draft-line-label">${line.yin_yang_label}</span>
+        </div>
+      `
+    )
+    .join("");
+
+  if (state.coinDraft.length < 6) {
+    coinProgressText.textContent = `已完成 ${state.coinDraft.length} / 6 爻，请继续点击起第 ${state.coinDraft.length + 1} 爻。`;
+  } else {
+    coinProgressText.textContent = "六爻已齐，正在生成卦象结果。";
+  }
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  modeBadge.textContent = `当前：${modeLabels[mode]}`;
+
+  Object.entries(modeButtons).forEach(([key, button]) => {
+    button.classList.toggle("is-active", key === mode);
+  });
+
+  Object.entries(modePanels).forEach(([key, panel]) => {
+    panel.classList.toggle("is-active", key === mode);
+  });
+}
+
+function generateRandomLineValue() {
+  const coins = Array.from({ length: 3 }, () => (Math.random() < 0.5 ? 2 : 3));
+  return coins[0] + coins[1] + coins[2];
+}
+
+async function analyzeSelectedLines(values) {
+  const response = await fetch("/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ lines: values.map(Number) }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.detail || `HTTP ${response.status}`);
+  }
+
+  state.lines = data.lines || [];
+  state.interpretation = data.interpretation || null;
+  renderLines();
+  renderInterpretation();
 }
 
 function renderLines() {
@@ -119,12 +232,18 @@ function renderInterpretation() {
 function resetAll() {
   state.lines = [];
   state.interpretation = null;
+  state.coinDraft = [];
+  state.manualValues = [7, 7, 7, 7, 7, 7];
   questionInput.value = "";
+  manualSelects.forEach((select, index) => {
+    select.value = String(state.manualValues[index]);
+  });
   aiContainer.className = "ai-empty";
   aiContainer.textContent = "输入问题后，AI 解读会显示在这里。";
   setStatus("等待起卦");
   renderLines();
   renderInterpretation();
+  renderCoinDraft();
 }
 
 async function castHexagram() {
@@ -150,6 +269,56 @@ async function castHexagram() {
     linesContainer.textContent = `起卦失败，请稍后重试。${error.message ? `（${error.message}）` : ""}`;
   } finally {
     castButton.disabled = false;
+  }
+}
+
+async function castByCoins() {
+  if (state.coinDraft.length >= 6) {
+    return;
+  }
+
+  state.coinDraft.push(generateRandomLineValue());
+  renderCoinDraft();
+
+  if (state.coinDraft.length < 6) {
+    return;
+  }
+
+  coinCastButton.disabled = true;
+  setStatus("正在起卦");
+  try {
+    await analyzeSelectedLines(state.coinDraft);
+    setStatus("起卦完成");
+  } catch (error) {
+    setStatus("起卦失败");
+    coinPreview.className = "draft-lines empty-draft";
+    coinPreview.textContent = `铜钱起卦失败，请稍后重试。${error.message ? `（${error.message}）` : ""}`;
+  } finally {
+    coinCastButton.disabled = false;
+  }
+}
+
+function resetCoinDraft() {
+  state.coinDraft = [];
+  renderCoinDraft();
+  if (!state.lines.length) {
+    setStatus("等待起卦");
+  }
+}
+
+async function castByManualInput() {
+  manualAnalyzeButton.disabled = true;
+  setStatus("正在起卦");
+
+  try {
+    await analyzeSelectedLines(state.manualValues);
+    setStatus("起卦完成");
+  } catch (error) {
+    setStatus("起卦失败");
+    linesContainer.className = "lines-empty";
+    linesContainer.textContent = `手动起卦失败，请稍后重试。${error.message ? `（${error.message}）` : ""}`;
+  } finally {
+    manualAnalyzeButton.disabled = false;
   }
 }
 
@@ -195,8 +364,23 @@ async function requestAiReading() {
   }
 }
 
+Object.entries(modeButtons).forEach(([mode, button]) => {
+  button.addEventListener("click", () => setMode(mode));
+});
+
+manualSelects.forEach((select) => {
+  select.addEventListener("change", (event) => {
+    const index = Number(event.target.dataset.lineIndex);
+    state.manualValues[index] = Number(event.target.value);
+  });
+});
+
 castButton.addEventListener("click", castHexagram);
+coinCastButton.addEventListener("click", castByCoins);
+coinResetButton.addEventListener("click", resetCoinDraft);
+manualAnalyzeButton.addEventListener("click", castByManualInput);
 resetButton.addEventListener("click", resetAll);
 aiButton.addEventListener("click", requestAiReading);
 
+setMode("direct");
 resetAll();

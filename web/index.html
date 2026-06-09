@@ -25,12 +25,114 @@
           <span>AI 辅助解读</span>
         </div>
         <div class="hero-actions">
-          <button id="castButton" class="primary-button">立即起一卦</button>
+          <a href="#castingPanel" class="primary-button hero-link-button">开始起卦</a>
           <button id="resetButton" class="secondary-button">清空结果</button>
         </div>
       </header>
 
       <main class="content-grid">
+        <section id="castingPanel" class="panel panel-casting">
+          <div class="panel-head">
+            <h2>起卦方式</h2>
+            <span id="modeBadge" class="status-badge">当前：直接起卦</span>
+          </div>
+
+          <div class="cast-mode-tabs" role="tablist" aria-label="起卦方式">
+            <button id="modeDirect" class="mode-tab is-active" type="button">直接起卦</button>
+            <button id="modeCoins" class="mode-tab" type="button">铜钱起卦</button>
+            <button id="modeManual" class="mode-tab" type="button">手动输入</button>
+          </div>
+
+          <div id="directPanel" class="mode-panel is-active">
+            <p class="mode-copy">
+              系统一次性随机生成六爻，适合想快速起卦并立即查看结果的场景。
+            </p>
+            <button id="castButton" class="primary-button">立即起一卦</button>
+          </div>
+
+          <div id="coinsPanel" class="mode-panel">
+            <p class="mode-copy">
+              点击下方铜钱按钮，逐次起出六爻。每点一次生成一爻，累计六次后自动完成解卦。
+            </p>
+            <div class="coin-stage">
+              <button id="coinCastButton" class="coin-button" type="button" aria-label="铜钱起卦">
+                <span class="coin-face">乾</span>
+                <span class="coin-face">坤</span>
+              </button>
+              <div class="coin-meta">
+                <div id="coinProgressText" class="coin-progress">当前还未开始，请点击起第一爻。</div>
+                <button id="coinResetButton" class="secondary-button" type="button">重置铜钱记录</button>
+              </div>
+            </div>
+            <div id="coinPreview" class="draft-lines empty-draft">铜钱起卦的六爻进度会显示在这里。</div>
+          </div>
+
+          <div id="manualPanel" class="mode-panel">
+            <p class="mode-copy">
+              依次为六爻选择数值。`6` 为老阴，`7` 为少阳，`8` 为少阴，`9` 为老阳。
+            </p>
+            <div class="manual-grid">
+              <label class="manual-item">
+                <span>初爻</span>
+                <select class="manual-select" data-line-index="0">
+                  <option value="7">7 · 少阳</option>
+                  <option value="6">6 · 老阴</option>
+                  <option value="8">8 · 少阴</option>
+                  <option value="9">9 · 老阳</option>
+                </select>
+              </label>
+              <label class="manual-item">
+                <span>二爻</span>
+                <select class="manual-select" data-line-index="1">
+                  <option value="7">7 · 少阳</option>
+                  <option value="6">6 · 老阴</option>
+                  <option value="8">8 · 少阴</option>
+                  <option value="9">9 · 老阳</option>
+                </select>
+              </label>
+              <label class="manual-item">
+                <span>三爻</span>
+                <select class="manual-select" data-line-index="2">
+                  <option value="7">7 · 少阳</option>
+                  <option value="6">6 · 老阴</option>
+                  <option value="8">8 · 少阴</option>
+                  <option value="9">9 · 老阳</option>
+                </select>
+              </label>
+              <label class="manual-item">
+                <span>四爻</span>
+                <select class="manual-select" data-line-index="3">
+                  <option value="7">7 · 少阳</option>
+                  <option value="6">6 · 老阴</option>
+                  <option value="8">8 · 少阴</option>
+                  <option value="9">9 · 老阳</option>
+                </select>
+              </label>
+              <label class="manual-item">
+                <span>五爻</span>
+                <select class="manual-select" data-line-index="4">
+                  <option value="7">7 · 少阳</option>
+                  <option value="6">6 · 老阴</option>
+                  <option value="8">8 · 少阴</option>
+                  <option value="9">9 · 老阳</option>
+                </select>
+              </label>
+              <label class="manual-item">
+                <span>上爻</span>
+                <select class="manual-select" data-line-index="5">
+                  <option value="7">7 · 少阳</option>
+                  <option value="6">6 · 老阴</option>
+                  <option value="8">8 · 少阴</option>
+                  <option value="9">9 · 老阳</option>
+                </select>
+              </label>
+            </div>
+            <div class="manual-actions">
+              <button id="manualAnalyzeButton" class="primary-button" type="button">按当前输入起卦</button>
+            </div>
+          </div>
+        </section>
+
         <section class="panel panel-lines">
           <div class="panel-head">
             <h2>卦象结果</h2>
