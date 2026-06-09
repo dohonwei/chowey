@@ -157,10 +157,30 @@ def _strip_reasoning_content(text: str) -> str:
 
     cleaned = text.strip()
 
+    if not cleaned:
+        return cleaned
+
     if "</think>" in cleaned:
         cleaned = cleaned.split("</think>", 1)[1].strip()
 
     cleaned = re.sub(r"<think>.*?</think>", "", cleaned, flags=re.IGNORECASE | re.DOTALL).strip()
+
+    answer_markers = (
+        "\n\n收到",
+        "\n\n本次",
+        "\n\n根据",
+        "\n\n从卦象",
+        "\n\n先说结论",
+        "\n\n这次",
+        "\n\n测试",
+        "\n\n若问",
+        "\n\n如果你问的是",
+        "\n\n**简要建议",
+    )
+    for marker in answer_markers:
+        idx = cleaned.find(marker)
+        if idx != -1:
+            return cleaned[idx + 2 :].strip()
 
     reasoning_prefixes = (
         "Here's a thinking process:",
@@ -183,6 +203,21 @@ def _strip_reasoning_content(text: str) -> str:
                     return cleaned[idx + 2 :].strip()
 
     return cleaned
+
+
+def _friendly_api_error(errors: List[str]) -> str:
+    raw = "\n\n".join(errors)
+
+    if "HTTP 401" in raw or "Invalid token" in raw:
+        return "AI 接口鉴权失败，请检查 API Key 是否填写正确。"
+    if "Read timed out" in raw or "timed out" in raw:
+        return "AI 服务响应超时了，请稍后再试。若连续多次超时，通常是上游模型通道不稳定。"
+    if "HTTP 500" in raw or "do_request_failed" in raw or "upstream error" in raw:
+        return "AI 服务暂时不可用，请稍后再试。当前是上游模型通道返回了服务错误。"
+    if "不是合法 JSON" in raw:
+        return "AI 接口返回了异常内容，当前通道配置可能不兼容，请检查接口地址是否为 OpenAI 兼容端点。"
+
+    return "AI 服务暂时不可用，请稍后重试。"
 
 
 def _is_connectivity_test(question: str) -> bool:
@@ -489,6 +524,7 @@ def ai_interpret_hexagram(
 
     return (
         f"调用 API 时出错（尝试了 {len(endpoints)} 个端点）：\n"
+        f"{_friendly_api_error(errors)}\n\n"
         + "\n\n".join(errors)
     )
 

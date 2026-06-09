@@ -3,17 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>周易起卦与解卦</title>
+    <title>六爻参 | 在线起卦与解卦</title>
+    <meta
+      name="description"
+      content="六爻参是一款在线起卦与解卦工具，支持随机起卦、卦象展示与 AI 解读。"
+    />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
     <div class="page-shell">
       <header class="hero">
-        <p class="eyebrow">YI JING WEB</p>
-        <h1>把这个项目直接放到网页上用</h1>
+        <p class="eyebrow">LIU YAO CAN</p>
+        <h1>六爻参</h1>
         <p class="hero-copy">
-          服务器负责起卦和解卦，浏览器负责展示。你把域名指向这台服务后，访问首页就能直接使用。
+          在线起卦，实时解读。先起出六爻，再结合你的问题查看本卦、变卦与 AI 分析。
         </p>
+        <div class="hero-points">
+          <span>六爻起卦</span>
+          <span>本卦与变卦展示</span>
+          <span>AI 辅助解读</span>
+        </div>
         <div class="hero-actions">
           <button id="castButton" class="primary-button">立即起一卦</button>
           <button id="resetButton" class="secondary-button">清空结果</button>
@@ -27,7 +37,7 @@
             <span id="statusBadge" class="status-badge">等待起卦</span>
           </div>
           <div id="linesContainer" class="lines-empty">
-            点击上方按钮后，这里会显示六爻。
+            点击“立即起一卦”后，这里会显示六爻结果。
           </div>
         </section>
 
@@ -36,7 +46,7 @@
             <h2>解卦说明</h2>
           </div>
           <div id="readingContainer" class="reading-empty">
-            起卦完成后，这里会展示本卦、变卦和爻辞。
+            起卦完成后，这里会展示本卦、变卦、动爻与爻辞要点。
           </div>
         </section>
 
@@ -44,14 +54,14 @@
           <div class="panel-head">
             <h2>AI 深度解读</h2>
           </div>
-          <label class="input-label" for="questionInput">输入你的占问主题</label>
+          <label class="input-label" for="questionInput">输入你的问题</label>
           <textarea
             id="questionInput"
             class="question-input"
             placeholder="例如：未来半年事业推进是否顺利？这段合作要不要继续？"
           ></textarea>
           <button id="aiButton" class="primary-button ai-button">请求 AI 解卦</button>
-          <div id="aiContainer" class="ai-empty">AI 结果会显示在这里。</div>
+          <div id="aiContainer" class="ai-empty">输入问题后，AI 解读会显示在这里。</div>
         </section>
       </main>
     </div>

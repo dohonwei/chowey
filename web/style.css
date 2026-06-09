@@ -63,6 +63,23 @@ body {
   line-height: 1.8;
 }
 
+.hero-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.hero-points span {
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: var(--accent-dark);
+  font-size: 13px;
+  font-weight: 700;
+  background: rgba(255, 248, 239, 0.86);
+  border: 1px solid rgba(110, 80, 54, 0.12);
+}
+
 .hero-actions {
   display: flex;
   gap: 12px;
@@ -147,6 +164,16 @@ button:disabled {
   background: rgba(41, 94, 69, 0.12);
   font-size: 13px;
   font-weight: 700;
+}
+
+.status-badge.is-busy {
+  color: #8a5a16;
+  background: rgba(176, 116, 24, 0.12);
+}
+
+.status-badge.is-error {
+  color: #8d2c23;
+  background: rgba(141, 44, 35, 0.12);
 }
 
 .lines-empty,
@@ -263,6 +290,12 @@ button:disabled {
   margin-top: 18px;
 }
 
+.ai-result.is-error {
+  color: #8d2c23;
+  background: rgba(255, 241, 239, 0.92);
+  border-color: rgba(141, 44, 35, 0.16);
+}
+
 @media (max-width: 900px) {
   .panel-lines,
   .panel-reading,
@@ -272,6 +305,10 @@ button:disabled {
 
   .hero {
     padding: 28px 22px;
+  }
+
+  .hero-points {
+    gap: 8px;
   }
 }
 

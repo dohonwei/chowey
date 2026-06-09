@@ -14,6 +14,13 @@ const statusBadge = document.getElementById("statusBadge");
 
 function setStatus(text) {
   statusBadge.textContent = text;
+  statusBadge.classList.remove("is-busy", "is-error");
+  if (text.includes("正在")) {
+    statusBadge.classList.add("is-busy");
+  }
+  if (text.includes("失败")) {
+    statusBadge.classList.add("is-error");
+  }
 }
 
 function escapeHtml(text) {
@@ -32,7 +39,7 @@ function escapeHtml(text) {
 function renderLines() {
   if (!state.lines.length) {
     linesContainer.className = "lines-empty";
-    linesContainer.textContent = "点击上方按钮后，这里会显示六爻。";
+    linesContainer.textContent = "点击“立即起一卦”后，这里会显示六爻结果。";
     return;
   }
 
@@ -61,7 +68,7 @@ function renderInterpretation() {
   const interpretation = state.interpretation;
   if (!interpretation) {
     readingContainer.className = "reading-empty";
-    readingContainer.textContent = "起卦完成后，这里会展示本卦、变卦和爻辞。";
+    readingContainer.textContent = "起卦完成后，这里会展示本卦、变卦、动爻与爻辞要点。";
     return;
   }
 
@@ -114,7 +121,7 @@ function resetAll() {
   state.interpretation = null;
   questionInput.value = "";
   aiContainer.className = "ai-empty";
-  aiContainer.textContent = "AI 结果会显示在这里。";
+  aiContainer.textContent = "输入问题后，AI 解读会显示在这里。";
   setStatus("等待起卦");
   renderLines();
   renderInterpretation();
@@ -124,7 +131,7 @@ async function castHexagram() {
   castButton.disabled = true;
   setStatus("正在起卦");
   aiContainer.className = "ai-empty";
-  aiContainer.textContent = "AI 结果会显示在这里。";
+  aiContainer.textContent = "输入问题后，AI 解读会显示在这里。";
 
   try {
     const response = await fetch("/cast", { method: "POST" });
@@ -140,7 +147,7 @@ async function castHexagram() {
   } catch (error) {
     setStatus("起卦失败");
     linesContainer.className = "lines-empty";
-    linesContainer.textContent = `起卦失败：${error.message}`;
+    linesContainer.textContent = `起卦失败，请稍后重试。${error.message ? `（${error.message}）` : ""}`;
   } finally {
     castButton.disabled = false;
   }
@@ -150,18 +157,18 @@ async function requestAiReading() {
   const question = questionInput.value.trim();
   if (!state.lines.length) {
     aiContainer.className = "ai-empty";
-    aiContainer.textContent = "请先起卦。";
+    aiContainer.textContent = "请先起卦，再进行解读。";
     return;
   }
   if (!question) {
     aiContainer.className = "ai-empty";
-    aiContainer.textContent = "请先输入你的问题。";
+    aiContainer.textContent = "请先输入你想咨询的问题。";
     return;
   }
 
   aiButton.disabled = true;
   aiContainer.className = "ai-result";
-  aiContainer.textContent = "正在请求 AI 解卦，请稍候...";
+  aiContainer.textContent = "正在生成解读，请稍候...";
 
   try {
     const response = await fetch("/ai", {
@@ -181,8 +188,8 @@ async function requestAiReading() {
     aiContainer.className = "ai-result";
     aiContainer.textContent = data.ai_text || "未返回 AI 内容。";
   } catch (error) {
-    aiContainer.className = "ai-result";
-    aiContainer.textContent = `AI 解卦失败：${error.message}`;
+    aiContainer.className = "ai-result is-error";
+    aiContainer.textContent = error.message || "AI 服务暂时不可用，请稍后重试。";
   } finally {
     aiButton.disabled = false;
   }

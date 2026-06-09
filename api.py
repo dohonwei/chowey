@@ -26,7 +26,7 @@ import json
 from pathlib import Path
 from typing import List, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -172,6 +172,10 @@ def _serialize_lines(lines: List[Line]) -> List[LineOut]:
     ]
 
 
+def _is_api_error_message(text: str) -> bool:
+    return text.startswith("调用 API 时出错") or text.startswith("未检测到 API 密钥")
+
+
 # -------------------------
 # 路由：起卦 & 解卦
 # -------------------------
@@ -248,6 +252,9 @@ def ai_explain(req: AiRequest) -> AiResponse:
         base_url=DEFAULT_BASE_URL,
     )
 
+    if _is_api_error_message(ai_text):
+        raise HTTPException(status_code=502, detail=ai_text)
+
     return AiResponse(ai_text=ai_text)
 
 
@@ -259,6 +266,16 @@ def web_index():
     if index_file.exists():
         return FileResponse(index_file)
     return {"status": "ok", "message": "YiJing API is running, but web assets are missing."}
+
+
+@app.get("/favicon.ico")
+def favicon():
+    """返回站点图标，避免浏览器重复请求 404。"""
+
+    favicon_file = WEB_DIR / "favicon.svg"
+    if favicon_file.exists():
+        return FileResponse(favicon_file, media_type="image/svg+xml")
+    raise HTTPException(status_code=404, detail="favicon not found")
 
 
 @app.get("/health")
