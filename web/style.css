@@ -322,45 +322,6 @@ button:disabled {
   line-height: 1.7;
 }
 
-.draft-lines {
-  display: grid;
-  gap: 10px;
-  margin-top: 18px;
-}
-
-.empty-draft {
-  min-height: 92px;
-  display: grid;
-  place-items: center;
-  color: var(--muted);
-  border: 1px dashed var(--line);
-  border-radius: 18px;
-  padding: 16px;
-  text-align: center;
-}
-
-.draft-line-card {
-  display: grid;
-  grid-template-columns: 90px 70px 1fr;
-  gap: 12px;
-  align-items: center;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: rgba(255, 252, 247, 0.84);
-  border: 1px solid rgba(110, 80, 54, 0.1);
-}
-
-.draft-line-position,
-.draft-line-label {
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.draft-line-symbol {
-  font-size: 22px;
-  font-weight: 700;
-}
-
 .manual-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -545,10 +506,6 @@ button:disabled {
   .line-card {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .draft-line-card {
-    grid-template-columns: 1fr;
   }
 
   .manual-grid {

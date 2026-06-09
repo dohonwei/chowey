@@ -18,7 +18,6 @@ const aiContainer = document.getElementById("aiContainer");
 const statusBadge = document.getElementById("statusBadge");
 const modeBadge = document.getElementById("modeBadge");
 const coinProgressText = document.getElementById("coinProgressText");
-const coinPreview = document.getElementById("coinPreview");
 const modeButtons = {
   direct: document.getElementById("modeDirect"),
   coins: document.getElementById("modeCoins"),
@@ -82,9 +81,10 @@ function valueToLineMeta(value) {
 
 function renderCoinDraft() {
   if (!state.coinDraft.length) {
-    coinPreview.className = "draft-lines empty-draft";
-    coinPreview.textContent = "铜钱起卦的六爻进度会显示在这里。";
     coinProgressText.textContent = "当前还未开始，请点击起第一爻。";
+    if (!state.lines.length) {
+      renderLines();
+    }
     return;
   }
 
@@ -92,14 +92,16 @@ function renderCoinDraft() {
     .map((value, index) => ({ ...valueToLineMeta(value), position: index + 1 }))
     .reverse();
 
-  coinPreview.className = "draft-lines";
-  coinPreview.innerHTML = reversed
+  const draftCards = reversed
     .map(
       (line) => `
-        <div class="draft-line-card">
-          <span class="draft-line-position">第 ${line.position} 爻</span>
-          <span class="draft-line-symbol">${line.display_symbol}</span>
-          <span class="draft-line-label">${line.yin_yang_label}</span>
+        <div class="line-card">
+          <div class="line-main">
+            <span class="line-position">第 ${line.position} 爻</span>
+            <span class="line-symbol">${line.display_symbol}</span>
+            <span class="line-label">${line.yin_yang_label}</span>
+          </div>
+          ${line.is_moving ? '<span class="moving-mark">动爻</span>' : ""}
         </div>
       `
     )
@@ -110,6 +112,19 @@ function renderCoinDraft() {
   } else {
     coinProgressText.textContent = "六爻已齐，正在生成卦象结果。";
   }
+
+  linesContainer.className = "casting-result";
+  linesContainer.innerHTML = `
+    <div class="casting-result-grid">
+      <div class="casting-result-column">
+        <div class="casting-subtitle">铜钱起卦进度</div>
+        <div class="line-stack">${draftCards}</div>
+      </div>
+      <div class="casting-result-column">
+        <div class="reading-empty-inline">铜钱起卦进行中。累计满六爻后，会在这里自动展示本卦、变卦与动爻说明。</div>
+      </div>
+    </div>
+  `;
 }
 
 function setMode(mode) {
@@ -304,8 +319,8 @@ async function castByCoins() {
     setStatus("起卦完成");
   } catch (error) {
     setStatus("起卦失败");
-    coinPreview.className = "draft-lines empty-draft";
-    coinPreview.textContent = `铜钱起卦失败，请稍后重试。${error.message ? `（${error.message}）` : ""}`;
+    linesContainer.className = "lines-empty";
+    linesContainer.textContent = `铜钱起卦失败，请稍后重试。${error.message ? `（${error.message}）` : ""}`;
   } finally {
     coinCastButton.disabled = false;
   }
