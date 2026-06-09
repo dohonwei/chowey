@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.idea/
+.DS_Store
+
+miniapp/cloudfunctions/*/node_modules/
+miniapp/cloudfunctions/*/package-lock.json
+
+gui_config.local.json

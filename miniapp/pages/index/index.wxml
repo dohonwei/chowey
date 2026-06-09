@@ -1,0 +1,6 @@
+<view class="cover">
+  <view class="cover-badge">周易起卦与解卦</view>
+  <view class="cover-title">起卦，解卦，读趋势</view>
+  <view class="cover-text">适合正式发布的小程序结构，先起卦，再看本卦、变卦与 AI 解读。</view>
+  <button class="cover-button" type="primary" bindtap="onStart">开始起卦</button>
+</view>

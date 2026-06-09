@@ -1,0 +1,58 @@
+<view class="page">
+  <view class="title">解读结果</view>
+  <view class="subtitle">本卦、变卦、动爻与 AI 解读</view>
+
+  <view class="section">
+    <view class="section-title">本卦</view>
+    <view class="card">
+      <view>卦名：{{interpretation.main_name}}</view>
+      <view>卦象：{{interpretation.main_title}}</view>
+      <view class="label">卦辞：</view>
+      <view class="text">{{interpretation.main_judgement}}</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">变卦</view>
+    <view class="card">
+      <view wx:if="{{interpretation.changing_name}}">
+        <view>卦名：{{interpretation.changing_name}}</view>
+        <view>卦象：{{interpretation.changing_title}}</view>
+        <view class="label">卦辞：</view>
+        <view class="text">{{interpretation.changing_judgement}}</view>
+      </view>
+      <view wx:else>本卦无动爻，因此不存在变卦。</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">动爻 / 爻辞</view>
+    <view class="card">
+      <block wx:for="{{interpretation.lines_explanation}}" wx:key="position">
+        <view class="line-explain">
+          <text>第 {{item.position}} 爻</text>
+          <text wx:if="{{item.is_moving}}">【动爻】</text>
+          <text wx:else>【参考】</text>
+          <text>：{{item.text}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">AI 深度解卦</view>
+    <textarea
+      class="question-input"
+      placeholder="例如：想问未来一年的事业发展、感情走向等……"
+      value="{{userQuestion}}"
+      bindinput="onQuestionInput"
+    />
+    <button type="primary" bindtap="onAiExplain" loading="{{aiLoading}}" disabled="{{aiLoading}}">
+      请求 AI 解卦
+    </button>
+
+    <view class="ai-result" wx:if="{{aiText}}">
+      <text>{{aiText}}</text>
+    </view>
+  </view>
+</view>

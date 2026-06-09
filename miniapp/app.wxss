@@ -1,0 +1,7 @@
+/**app.wxss**/
+/* 全局样式 */
+page {
+  background-color: #ffffff;
+  font-size: 28rpx;
+  color: #333;
+}

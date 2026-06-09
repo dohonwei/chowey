@@ -1,0 +1,17 @@
+[Unit]
+Description=YiJing Web App
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/yijing-web
+Environment=LLM_API_KEY=replace-with-your-real-key
+Environment=LLM_MODEL=Qwen3.6-27B
+Environment=LLM_BASE_URL=https://wgooold.cn
+ExecStart=/opt/yijing-web/.venv/bin/uvicorn api:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

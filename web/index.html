@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>周易起卦与解卦</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <p class="eyebrow">YI JING WEB</p>
+        <h1>把这个项目直接放到网页上用</h1>
+        <p class="hero-copy">
+          服务器负责起卦和解卦，浏览器负责展示。你把域名指向这台服务后，访问首页就能直接使用。
+        </p>
+        <div class="hero-actions">
+          <button id="castButton" class="primary-button">立即起一卦</button>
+          <button id="resetButton" class="secondary-button">清空结果</button>
+        </div>
+      </header>
+
+      <main class="content-grid">
+        <section class="panel panel-lines">
+          <div class="panel-head">
+            <h2>卦象结果</h2>
+            <span id="statusBadge" class="status-badge">等待起卦</span>
+          </div>
+          <div id="linesContainer" class="lines-empty">
+            点击上方按钮后，这里会显示六爻。
+          </div>
+        </section>
+
+        <section class="panel panel-reading">
+          <div class="panel-head">
+            <h2>解卦说明</h2>
+          </div>
+          <div id="readingContainer" class="reading-empty">
+            起卦完成后，这里会展示本卦、变卦和爻辞。
+          </div>
+        </section>
+
+        <section class="panel panel-ai">
+          <div class="panel-head">
+            <h2>AI 深度解读</h2>
+          </div>
+          <label class="input-label" for="questionInput">输入你的占问主题</label>
+          <textarea
+            id="questionInput"
+            class="question-input"
+            placeholder="例如：未来半年事业推进是否顺利？这段合作要不要继续？"
+          ></textarea>
+          <button id="aiButton" class="primary-button ai-button">请求 AI 解卦</button>
+          <div id="aiContainer" class="ai-empty">AI 结果会显示在这里。</div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

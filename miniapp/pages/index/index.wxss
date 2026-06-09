@@ -1,0 +1,38 @@
+.cover {
+  min-height: 100vh;
+  padding: 96rpx 48rpx 64rpx;
+  background: linear-gradient(180deg, #0f1e45 0%, #1f4fd1 50%, #f6f8fc 100%);
+  color: #ffffff;
+}
+
+.cover-badge {
+  display: inline-block;
+  padding: 10rpx 18rpx;
+  margin-bottom: 28rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 22rpx;
+}
+
+.cover-title {
+  font-size: 54rpx;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 20rpx;
+}
+
+.cover-text {
+  max-width: 580rpx;
+  font-size: 28rpx;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: 48rpx;
+}
+
+.cover-button {
+  width: 100%;
+  border-radius: 18rpx;
+  background: #ffffff;
+  color: #1f4fd1;
+  font-weight: 700;
+}

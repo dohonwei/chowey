@@ -1,0 +1,46 @@
+<view class="page">
+  <view class="topline">
+    <view>
+      <view class="title">起卦</view>
+      <view class="subtitle">选择方式后生成六爻</view>
+    </view>
+    <view class="status-pill">{{castProgress}}%</view>
+  </view>
+
+  <view class="mode-row">
+    <view class="mode-card {{castMode === 'single' ? 'active' : ''}}" data-mode="single" bindtap="onChooseMode">
+      <view class="mode-title">逐爻起卦</view>
+      <view class="mode-desc">逐步生成</view>
+    </view>
+    <view class="mode-card {{castMode === 'all' ? 'active' : ''}}" data-mode="all" bindtap="onChooseMode">
+      <view class="mode-title">一次起卦</view>
+      <view class="mode-desc">快速生成</view>
+    </view>
+  </view>
+
+  <view class="panel">
+    <view class="panel-head">
+      <view class="panel-hint">{{castHint}}</view>
+      <view class="panel-progress">第 {{castingLineIndex || 0}} / 6 爻</view>
+    </view>
+    <view class="bar">
+      <view class="bar-inner" style="width: {{castProgress}}%;"></view>
+    </view>
+
+    <view class="slot-list">
+      <block wx:for="{{castSlots.length ? castSlots : [0,0,0,0,0,0]}}" wx:key="index">
+        <view class="slot {{item ? 'filled' : ''}}">
+          <view class="slot-top">第 {{index + 1}} 爻</view>
+          <view class="slot-symbol">{{item ? item.display_symbol : '等待'}}</view>
+          <view class="slot-label">{{item ? item.yin_yang_label : '未生成'}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="actions">
+    <button type="primary" bindtap="onCast" loading="{{casting}}">开始起卦</button>
+    <button bindtap="onReset">重置</button>
+    <button bindtap="onGoRead">去解读</button>
+  </view>
+</view>
