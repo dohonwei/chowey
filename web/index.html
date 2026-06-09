@@ -26,7 +26,6 @@
         </div>
         <div class="hero-actions">
           <a href="#castingPanel" class="primary-button hero-link-button">开始起卦</a>
-          <button id="resetButton" class="secondary-button">清空结果</button>
         </div>
       </header>
 
@@ -34,7 +33,12 @@
         <section id="castingPanel" class="panel panel-casting">
           <div class="panel-head">
             <h2>起卦方式</h2>
-            <span id="modeBadge" class="status-badge">当前：直接起卦</span>
+            <div class="casting-head-actions">
+              <span id="modeBadge" class="status-badge">当前：直接起卦</span>
+              <button id="resetButton" class="secondary-button casting-reset-button" type="button">
+                清空结果
+              </button>
+            </div>
           </div>
 
           <div class="cast-mode-tabs" role="tablist" aria-label="起卦方式">

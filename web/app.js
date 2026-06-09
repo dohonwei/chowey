@@ -226,9 +226,15 @@ function renderLines() {
 
   linesContainer.className = "casting-result";
   linesContainer.innerHTML = `
-    <div class="casting-subtitle">六爻排盘</div>
-    <div class="line-stack">${lineCards}</div>
-    ${summaryBlock}
+    <div class="casting-result-grid">
+      <div class="casting-result-column">
+        <div class="casting-subtitle">六爻排盘</div>
+        <div class="line-stack">${lineCards}</div>
+      </div>
+      <div class="casting-result-column">
+        ${summaryBlock || '<div class="reading-empty-inline">起卦完成后，这里会展示本卦、变卦与动爻说明。</div>'}
+      </div>
+    </div>
   `;
 }
 
@@ -250,6 +256,7 @@ function resetAll() {
   setStatus("等待起卦");
   renderLines();
   renderCoinDraft();
+  coinCastButton.disabled = false;
 }
 
 async function castHexagram() {
