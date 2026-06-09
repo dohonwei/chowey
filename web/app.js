@@ -14,7 +14,6 @@ const resetButton = document.getElementById("resetButton");
 const aiButton = document.getElementById("aiButton");
 const questionInput = document.getElementById("questionInput");
 const linesContainer = document.getElementById("linesContainer");
-const readingContainer = document.getElementById("readingContainer");
 const aiContainer = document.getElementById("aiContainer");
 const statusBadge = document.getElementById("statusBadge");
 const modeBadge = document.getElementById("modeBadge");
@@ -152,7 +151,7 @@ async function analyzeSelectedLines(values) {
 function renderLines() {
   if (!state.lines.length) {
     linesContainer.className = "lines-empty";
-    linesContainer.textContent = "点击“立即起一卦”后，这里会显示六爻结果。";
+    linesContainer.textContent = "完成起卦后，这里会显示六爻、本卦、变卦与动爻说明。";
     return;
   }
 
@@ -160,8 +159,7 @@ function renderLines() {
     .map((line, index) => ({ ...line, position: index + 1 }))
     .reverse();
 
-  linesContainer.className = "";
-  linesContainer.innerHTML = reversed
+  const lineCards = reversed
     .map(
       (line) => `
         <div class="line-card">
@@ -175,58 +173,67 @@ function renderLines() {
       `
     )
     .join("");
+
+  const interpretation = state.interpretation;
+  let summaryBlock = "";
+
+  if (interpretation) {
+    const changingBlock = interpretation.changing_name
+      ? `
+        <div class="meta-block">
+          <span class="meta-title">变卦</span>
+          <div class="meta-text">卦名：${escapeHtml(interpretation.changing_name)}</div>
+          <div class="meta-text">卦象：${escapeHtml(interpretation.changing_title)}</div>
+          <div class="meta-text">卦辞：${escapeHtml(interpretation.changing_judgement)}</div>
+        </div>
+      `
+      : `
+        <div class="meta-block">
+          <span class="meta-title">变卦</span>
+          <div class="meta-text">本卦无动爻，因此不存在变卦。</div>
+        </div>
+      `;
+
+    const explainList = interpretation.lines_explanation
+      .map(
+        (item) => `
+          <div class="explain-item">
+            <div class="explain-title">
+              第 ${item.position} 爻 ${item.is_moving ? "· 动爻" : "· 参考"}
+            </div>
+            <div class="explain-text">${escapeHtml(item.text)}</div>
+          </div>
+        `
+      )
+      .join("");
+
+    summaryBlock = `
+      <div class="casting-reading">
+        <div class="casting-subtitle">解卦说明</div>
+        <div class="meta-row">
+          <div class="meta-block">
+            <span class="meta-title">本卦</span>
+            <div class="meta-text">卦名：${escapeHtml(interpretation.main_name)}</div>
+            <div class="meta-text">卦象：${escapeHtml(interpretation.main_title)}</div>
+            <div class="meta-text">卦辞：${escapeHtml(interpretation.main_judgement)}</div>
+          </div>
+          ${changingBlock}
+        </div>
+        <div class="explain-list">${explainList}</div>
+      </div>
+    `;
+  }
+
+  linesContainer.className = "casting-result";
+  linesContainer.innerHTML = `
+    <div class="casting-subtitle">六爻排盘</div>
+    <div class="line-stack">${lineCards}</div>
+    ${summaryBlock}
+  `;
 }
 
 function renderInterpretation() {
-  const interpretation = state.interpretation;
-  if (!interpretation) {
-    readingContainer.className = "reading-empty";
-    readingContainer.textContent = "起卦完成后，这里会展示本卦、变卦、动爻与爻辞要点。";
-    return;
-  }
-
-  const changingBlock = interpretation.changing_name
-    ? `
-      <div class="meta-block">
-        <span class="meta-title">变卦</span>
-        <div class="meta-text">卦名：${escapeHtml(interpretation.changing_name)}</div>
-        <div class="meta-text">卦象：${escapeHtml(interpretation.changing_title)}</div>
-        <div class="meta-text">卦辞：${escapeHtml(interpretation.changing_judgement)}</div>
-      </div>
-    `
-    : `
-      <div class="meta-block">
-        <span class="meta-title">变卦</span>
-        <div class="meta-text">本卦无动爻，因此不存在变卦。</div>
-      </div>
-    `;
-
-  const explainList = interpretation.lines_explanation
-    .map(
-      (item) => `
-        <div class="explain-item">
-          <div class="explain-title">
-            第 ${item.position} 爻 ${item.is_moving ? "· 动爻" : "· 参考"}
-          </div>
-          <div class="explain-text">${escapeHtml(item.text)}</div>
-        </div>
-      `
-    )
-    .join("");
-
-  readingContainer.className = "";
-  readingContainer.innerHTML = `
-    <div class="meta-row">
-      <div class="meta-block">
-        <span class="meta-title">本卦</span>
-        <div class="meta-text">卦名：${escapeHtml(interpretation.main_name)}</div>
-        <div class="meta-text">卦象：${escapeHtml(interpretation.main_title)}</div>
-        <div class="meta-text">卦辞：${escapeHtml(interpretation.main_judgement)}</div>
-      </div>
-      ${changingBlock}
-    </div>
-    <div class="explain-list">${explainList}</div>
-  `;
+  renderLines();
 }
 
 function resetAll() {
@@ -242,7 +249,6 @@ function resetAll() {
   aiContainer.textContent = "输入问题后，AI 解读会显示在这里。";
   setStatus("等待起卦");
   renderLines();
-  renderInterpretation();
   renderCoinDraft();
 }
 
